@@ -10,7 +10,6 @@ r = conn.get(url,headers=header)
 html = r.text
 
 soup = BeautifulSoup(html,"lxml")
-soup = BeautifulSoup(html,"lxml")
 user_menu = soup.find_all("ul",{"class":"dropdown-menu my-pag"})
 homepage = user_menu[0].find_all("li")
 # print(homepage[1].a["href"])
