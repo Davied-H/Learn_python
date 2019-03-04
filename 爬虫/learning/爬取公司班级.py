@@ -16,16 +16,9 @@ print("-------------------------------------------")
 
 all_teacher = soup.find_all("div",{"class":"pic",})
 for teacher in all_teacher :
-    div_list = teacher.contents #将span标签所以子节点存入list中
-    #去除teacher_list 中的"\n"属性
-    for div in range(len(div_list)-1,-1,-1): #使用range反序循环，正序容易出现下标越界错误
-        if div_list[div] == '\n':
-            div_list.remove('\n')
-    every_teacher = div_list[2].string
-    print(div_list[3])
-    print(div_list[3].contents[0].p)
-    # print(re.search(r"^<p>*</p>$",div_list[3].a.string))
-    # print(teacher.conten1ts)
+    teacher_name = teacher.find_all("div",{"class":"a2"})[0].string
+    teacher_message = teacher.p.get_text()
+    print(teacher_name + "\n" + teacher_message)
 print("-------------------------------------------")
 
 all_message = soup.find_all("div",{"class":"link-item-t"})
