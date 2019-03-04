@@ -14,7 +14,9 @@ r = requests.get(url=base_url,params=params)
 # print(r.request) //获取数据提交方式
 
 #post 方式
-
+data = {'firstname': '东东', 'lastname': '何'} #两个key分别对应html中fram表单中的两个值
+q = requests.post('http://pythonscraping.com/pages/files/processing.php', data=data) #注意这里的url是post后的地址，不是表单地址哟
+print(q.text)
 
 
 
