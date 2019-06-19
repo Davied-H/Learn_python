@@ -1,0 +1,76 @@
+import requests
+from bs4 import BeautifulSoup
+
+header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/73.0.3683.103 Safari/537.36"}
+
+
+# 查询方法，清洗对象
+def method(class_):
+    method_ = {"class": class_}
+    for key in list(method_.keys()):
+        if not method_.get(key):
+            del method_[key]
+    return method_
+
+
+class Spider:
+    def __init__(self, url, headers, body=None, body_class=None, content=None, content_class=None, domain=None,
+                 encoded=None, timeout=5):
+        self.result_pool = []  # 结果池
+        self.domain = domain
+        rq = requests.get(url, headers=headers, timeout=timeout)
+        rq.encoding = encoded
+        html = rq.text
+        soup = BeautifulSoup(html, "lxml")
+        self.body_div = soup.find("{}".format(body), **method(body_class))
+        if self.body_div:
+            self.contents = self.body_div.find_all(content, **method(content_class))
+
+    @staticmethod
+    def __doc__():
+        print("""
+        body : 主体标签
+        body_class : 主体标签定位方式，{"class":"**","id":"**"}
+        content : 内容标签
+        content_class :内容定位方式
+        domain : 补齐域名
+        encoded ：编码
+        timeout : url请求时间
+        """)
+
+    def get(self, text):
+        # 判断是否有内容主体
+        if "contents" in vars(self):
+            for id_, content in enumerate(self.contents):
+                if text == "href":
+                    result = str(content[text])
+                    if result:
+                        href = self.auto_domain(result=result)
+                        if href:
+                            self.result_pool.append(href)
+                elif text == "text":
+                    result = str(content.get_text())
+                    self.result_pool.append(result)
+                else:
+                    self.result_pool = "方法不被允许"
+        else:
+            self.result_pool = None
+        return self.result_pool
+
+    # 补齐域名
+    def auto_domain(self, result):
+        if "http" not in result:
+            if self.domain:
+                return self.domain + result
+            else:
+                return None
+        else:
+            return result
+
+
+if __name__ == "__main__":
+    spider = Spider(url="http://www.hqwx.com/leraning/class_yjxfgcs/ziliao/", headers=header, body="div",
+                    body_class="news_main",
+                    content="a", domain="http://www.hqwx.com")
+    spider.__doc__()
